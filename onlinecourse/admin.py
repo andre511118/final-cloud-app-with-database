@@ -28,11 +28,10 @@ class LessonAdmin(admin.ModelAdmin):
     list_display = ['title']
     inlines = [QuestionInline]
 
-
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ['question_text', 'grade']
     inlines = [ChoiceInline]
-
+    
 
 class ChoiceAdmin(admin.ModelAdmin):
     list_display = ['choice_text', 'is_correct']
