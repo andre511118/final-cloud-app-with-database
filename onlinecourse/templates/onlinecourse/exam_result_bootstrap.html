@@ -24,7 +24,7 @@
                     {% csrf_token %}
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Username" name="username" >
-                        <input type="password" class="form-control" placeholder="Username" name="psw" >
+                        <input type="password" class="form-control" placeholder="Password" name="psw" >
                         <button class="btn btn-primary" type="submit">Login</button>
                         <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
                     </div>
@@ -35,33 +35,42 @@
     </div>
 </nav>
 
-<div class="container-fluid">
+<div class="container-fluid" style='padding: 20px;'>
     {% if grade > 80 %}
-        <div class="alert alert-success">
-            You passed the exam with a grade of {{ grade }}!
-        </div>
-    {% else %}
+    <div class="alert alert-success">
+       <!--HINT Display passed info -->
+        <p><b>Congratulations, {{user.first_name}}! </b>You have passed the exam and completed the course with score {{grade}} / 100</p>
+    </div>
+        {% else %}
         <div class="alert alert-danger">
-            You failed the exam with a grade of {{ grade }}.
+            <!--HINT Display failed info -->
+            <p><b>Failed. </b>Sorry, {{user.first_name}}! You have failed the exam with score {{grade}} / 100</p>
         </div>
         <a class="btn btn-link text-danger" href="{% url 'onlinecourse:course_details' course.id %}">Re-test</a>
-    {% endif %}
-    
-    <div class="card-columns-vertical mt-1">
-        <h5 class="">Exam results</h5>
-        {% for question_result in question_results %}
-            <div class="card mt-1">
-                <div class="card-header"><h6>Question: {{ question_result.question.question_text }}</h6></div>
-                <div class="card-body">
-                    {% if question_result.is_correct %}
-                        <p class="text-success">You answered correctly.</p>
-                    {% else %}
-                        <p class="text-danger">You answered incorrectly.</p>
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-</div>
-</body>
+       {% endif %}
+       <div class="card-columns-vertical mt-1">
+           <h5 class="">Exam results</h5>
+           {% for question in course.question_set.all %}
+           <div class="card mt-1">
+               <div class="card-header"><h5>{{ question.content }}</h5></div>
+               <div class="form-group">
+                   {% for choice in question.choice_set.all %}
+                   <div class="form-check">
+                       {% if choice.is_correct and choice in choices %}
+                       <div class="text-success">Correct answer: {{ choice.content }}</div>
+                       {% else %}{% if choice.is_correct and not choice in choices %}
+                       <div class="text-warning">Not selected: {{ choice.content }}</div>
+                       {% else %}{% if not choice.is_correct and choice in choices %}
+                       <div class="text-danger">Wrong answer: {{ choice.content }}</div>
+                       {% else %}
+                       <div>{{ choice.content }}</div>
+                       {% endif %}{% endif %}{% endif %}
+                   </div>
+                   {% endfor %}
+               </div>
+           </div>
+           {% endfor %}
+       </div>
+   </div>
+   </body>
 </html>
